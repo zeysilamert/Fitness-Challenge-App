@@ -1,0 +1,274 @@
+﻿@page "{id}"
+@model MyApp.Namespace.ChallengeDetailsModel
+@{
+    ViewData["Title"] = "Challenge Details";
+}
+
+@using System.Security.Claims
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+
+body {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 28px;
+}
+
+.containerC {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(231, 164, 227, 0.592);
+    border-radius: 30px;
+}
+
+.jumbotron {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+}
+
+.challenge-details h2 {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.rating-section {
+    text-align: right;
+}
+
+.rating-section h4 {
+    margin-bottom: 10px;
+}
+
+.comment-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+}
+
+.profile-picture {
+    max-width: 50px;
+    max-height: 50px;
+}
+
+.comment-card .card-body {
+    padding: 15px;
+}
+
+.comment-card .card-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.rating-form {
+    margin-top: 30px;
+}
+
+.btn1 {
+    background: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: rgb(73, 60, 75);
+    box-shadow: 0 0 10px rgb(90, 87, 87);
+    margin-top: 10px;
+}
+
+button[type="submit"]:active{
+    background: linear-gradient(90deg, white, rgb(232, 120, 228))
+}
+
+.btn-secondary {
+    background: #6c757d;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+</style>
+<div class="containerC mt-4">
+    <div class="jumbotron">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                @if (Model.Challenges != null)
+                {
+                    <h2 class="display-4">@Model.Challenges.Title</h2>
+                    <p><b>Category: </b>@Model.Challenges.Category</p>
+                    <p class="lead">@Model.Challenges.Instruction</p>
+                }
+                else
+                {
+                    <p>No challenge found.</p>
+                }
+            </div>
+            <div class="text-right">
+                <h4>Average Rating</h4>
+                <div class="d-flex align-items-center" style="font-size: 24px;">
+                    @{
+                        var averageRating = Model.AverageRating;
+                        for (var i = 1; i <= 5; i++)
+                        {
+                            if (averageRating >= i)
+                            {
+                                <span>&#9733;</span>
+                            }
+                            else if (averageRating > i - 1 && averageRating < i)
+                            {
+                                <span>&#9734;</span>
+                            }
+                            else
+                            {
+                                <span>&#9734;</span>
+                            }
+                        }
+                    }
+                    <span class="ml-2">@Model.AverageRating</span>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <h2 class="font-weight-bold">Comments and Ratings</h2><br>
+        <div class="row">
+            @if (Model.Comments != null)
+            {
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body d-flex">
+                                <div class="mr-3">
+                                    @if (comment.User != null && comment.User.ProfilePicture != null)
+                                    {
+                                        <img src="@comment.User.ProfilePicture" class="rounded-circle img-fluid"
+                                            alt="Profile Picture" style="max-width: 50px; max-height: 50px;">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/empty_profile.jpg" class="rounded-circle img-fluid" alt="Profile Picture"
+                                            style="max-width: 50px; max-height: 50px;">
+                                    }
+                                </div>
+                                <div>
+                                    @if (comment.User != null && comment.User.UserName != null)
+                                    {
+                                        <h5 class="card-title">@comment.User.UserName.Split('@')[0]</h5>
+                                    }
+                                    <p class="card-text"><strong>Rating:</strong> @comment.Rating</p>
+                                    <p class="card-text">@comment.Content</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        @if (Model.Challenges != null)
+        {
+            @if (!Model.hasJoined)
+            {
+                    <form id="joinForm" asp-page-handler="JoinChallenge" method="post">
+                        <input type="hidden" name="challengeId" value="@Model.Challenges.Id" />
+                        <button type="submit" class="btn1">Join!</button>
+                    </form>
+            }
+            else if (!Model.isFavorite)
+            {
+                <form method="post" asp-page-handler="SaveAsFavorite">
+                    <input type="hidden" name="challengeId" value="@Model.Challenges.Id" />
+                    <button type="submit" class="btn btn-secondary">Save!</button>
+                </form>
+            }
+        }
+
+        @if (User.Identity != null)
+        {
+            @if (User.Identity.IsAuthenticated && Model.JoinChallenges != null && Model.JoinChallenges.Any(c => c.UserId ==
+           User.FindFirst(ClaimTypes.NameIdentifier)?.Value))
+            {
+                <div class="rating-form">
+                    <form method="post" asp-page-handler="AddCommentAndRating">
+                        <div class="form-group">
+                            <label for="rating">Your Rating:</label>
+                            <div id="rateYo"></div>
+                            <input type="hidden" id="rating" name="rating" />
+                        </div>
+                        <div class="form-group">
+                            <label for="content">Comment:</label>
+                            <textarea class="form-control" id="content" name="content"></textarea>
+                        </div>
+                        <input type="hidden" name="challengeId" value="@Model.Challenges.Id" />
+                        <button type="submit" class="btn1 ">Submit Rating</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    You must join the challenge to rate it.
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+<script>
+    jQuery(function ($) {
+        $("#rateYo").rateYo({
+            rating: 3.6,
+            fullStar: true,
+            onSet: function (rating, rateYoInstance) {
+                $("#rating").val(rating); // Set the rating value to hidden input
+            }
+        });
+    });
+</script>

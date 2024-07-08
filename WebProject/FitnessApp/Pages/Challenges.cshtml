@@ -1,0 +1,176 @@
+﻿@page
+@model FitnessApp.Pages.CreateChallengesModel
+@{
+    ViewData["Title"] = "Challenges";
+}
+
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+
+body {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 28px;
+}
+
+.btn-ch {
+    width: 100%;
+    background: white;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 10px rgb(90, 87, 87);
+    cursor: pointer;
+    font-size: 15px;
+    color: rgb(73, 60, 75);
+    font-weight: 600;
+    margin-top: 20px;
+}
+.btn-ch1 {
+    width: 100%;
+    background: white;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 10px rgb(90, 87, 87);
+    cursor: pointer;
+    font-size: 15px;
+    color: rgb(73, 60, 75);
+    font-weight: 600;
+    padding: 15px;
+    border-radius: 20px;
+}
+
+.card {
+    margin: 20px auto;
+    background: rgba(231, 164, 227, 0.592);
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 900px;
+}
+
+.card-header {
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid rgb(0, 0, 0);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    border: 1px solid rgb(0, 0, 0);
+    padding: 10px;
+    text-align: left;
+}
+
+.table th {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-sm {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+button[type="submit"]:active{
+    background: linear-gradient(90deg, white, rgb(232, 120, 228))
+}
+</style>
+
+<h2>Your Challenges</h2>
+
+<form method="get">
+    <div>
+        <div class="filter-group">
+            <label>Filter by date:</label>
+            <div class="input-group">
+                <input type="datetime-local" name="dateTime" placeholder="Start Date" />
+            </div>
+        </div>
+        <div class="filter-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="">All</option>
+                <option value="Step">Step</option>
+                <option value="Squad">Squad</option>
+                <option value="Cardio">Cardio</option>
+                <option value="Weight Loss">Weight Loss</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty" name="difficulty">
+                <option value="">All</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+            </select>
+        </div>
+        <button type="submit" class ="filter button">Filter</button>
+    </div>
+</form>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Challenges
+        <form id="addChallengeForm" method="get" action="/CreateChallenges">
+            <button type="submit" class="btn-ch1 ">Add Challenge</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <table class="table customized-tbl">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Difficulty Level</th>
+                    <th>Time Period</th>
+                    <th>Instructions</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var challenge in Model.Challenges)
+                {
+                    <tr>
+                        <td>@challenge.Title</td>
+                        <td>@challenge.Category</td>
+                        <td>@challenge.DifficultyLevel</td>
+                        <td>@challenge.StartDate-@challenge.EndDate</td>
+                        <td>@challenge.Instruction</td>
+                        <td>
+                            <form id="detailForm" method="get" action="/ChallengeDetails/@challenge.Id">
+                                <button type="submit" class="btn-ch btn-sm">View Details!</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

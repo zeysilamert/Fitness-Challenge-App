@@ -1,0 +1,51 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/FitnessApp.styles.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<div class="account-box">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="wr">
+        <div class="wrapper">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h2>Welcome to FitnessApp</h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="input-box">
+                    <label asp-for="Input.Email" class = "form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"
+                        placeholder="name@example.com" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <i class='bx bxs-envelope' ></i>
+                </div>
+                <div class="input-box">
+                    <label asp-for="Input.Password" class = "form-label">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password"
+                        aria-required="true" placeholder="password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+                <div class="input-box">
+                    <label asp-for="Input.ConfirmPassword" class = "form-label">Confirm Password</label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
+                        aria-required="true" placeholder="confirm password" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+                <label><input type="checkbox"> I declare that the above information provided is true and correct.</label>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

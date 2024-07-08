@@ -1,0 +1,228 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<style>
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.row {
+    margin: 20px 0;
+}
+
+/* Profile Form */
+#profile-form {
+    background-color:rgba(231, 164, 227, 0.592);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.form-floating {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-group input[type="file"] {
+    display: block;
+    margin-top: 5px;
+}
+
+.form-group img {
+    display: block;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+/* Save Button */
+#update-profile-button {
+    border-radius: 10px;
+}
+
+/* Saved Challenges */
+.card-header {
+    background-color: rgba(177, 101, 158, 0.719);
+    border-bottom: 1px solid rgba(174, 131, 199, 0.726);
+    font-weight: bold;
+}
+
+.customized-tbl th,
+.customized-tbl td {
+    vertical-align: middle;
+}
+
+.customized-tbl th:first-child,
+.customized-tbl td:first-child {
+    width: 20%;
+}
+
+.customized-tbl th:nth-child(2),
+.customized-tbl td:nth-child(2) {
+    width: 15%;
+}
+
+.customized-tbl th:nth-child(3),
+.customized-tbl td:nth-child(3) {
+    width: 20%;
+}
+
+.customized-tbl th:nth-child(4),
+.customized-tbl td:nth-child(4) {
+    width: 15%;
+}
+
+.customized-tbl th:nth-child(5),
+.customized-tbl td:nth-child(5) {
+    width: 30%;
+}
+
+.customized-tbl th:last-child,
+.customized-tbl td:last-child {
+    width: 10%;
+}
+
+.card-body {
+    padding: 0;
+    overflow-x: auto;
+}
+
+.customized-tbl {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.customized-tbl th,
+.customized-tbl td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(172, 128, 212, 0.623);
+}
+
+.customized-tbl th {
+    background-color: rgb(220, 192, 240);
+    text-align: left;
+    font-weight: bold;
+}
+
+.btn1 {
+    background: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: rgb(73, 60, 75);
+    box-shadow: 0 0 10px rgb(90, 87, 87);
+    margin-top: 10px;
+}
+
+button[type="submit"]:active{
+    background: linear-gradient(90deg, white, rgb(232, 120, 228))
+}
+
+</style>
+
+<h3>@ViewData["Title"]</h3>
+@*<partial name="_StatusMessage" for="StatusMessage" />*@
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
+                <label asp-for="Username" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Bio" class="control-label">Bio</label>
+                <textarea asp-for="Bio" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ProfilePictureUpload" class="control-label">Profile Picture</label>
+                <input asp-for="ProfilePictureUpload" type="file" class="form-control" />
+                <span asp-validation-for="ProfilePictureUpload" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Current Profile Picture</label>
+                @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                {
+                    <img src="@Model.ProfilePicture" width="100" height="100" alt="Profile Picture" />
+                }
+                else
+                {
+                    <img src="~/images/empty_profile.jpg" width="100" height="100" alt="Profile Picture" />
+                }
+            </div>
+            <br>
+            <button id="update-profile-button" type="submit" class="w-100 btn1 btn-lg">Save</button>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Saved Challenges
+            </div>
+            <div class="card-body">
+                <table class="table customized-tbl">
+                    <thead>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Time Period</th>
+                        <th>Difficulty Level</th>
+                        <th>Instructions</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        @foreach (var challenge in Model.FavoriteChallenges)
+                        {
+                            <tr>
+                                <td>@challenge.Challenge.Title</td>
+                                <td>@challenge.Challenge.Category</td>
+                                <td>@challenge.Challenge.StartDate-@challenge.Challenge.EndDate</td>
+                                <td>@challenge.Challenge.DifficultyLevel</td>
+                                <td>@challenge.Challenge.Instruction</td>
+                                <td>
+                                    <form id="viewDetailsForm" method="get" action="/ChallengeDetails/@challenge.Challenge.Id">
+                                        <button type="submit" class="btn1 btn-sm">View Details</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
